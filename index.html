@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VibeCheck: Jadwal, Jurnal & Kalender</title>
+  <title>VibeCheck: Jadwal, Jurnal & Kalender (AI Edition)</title>
   
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#3b82f6">
-  <meta name="description" content="Aplikasi offline cerdas untuk jadwal dan jurnal harian">
+  <meta name="description" content="Aplikasi offline cerdas untuk jadwal dan jurnal harian dengan AI Assistant">
   
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
   <link rel="apple-touch-icon" href="./icon-192.png">
@@ -57,6 +57,10 @@
     /* Glassmorphism Utilities */
     .glass-card { background: rgba(31, 41, 55, 0.4); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
     
+    /* PENGEMBANGAN AI CSS UTILITIES */
+    .ai-glow { box-shadow: 0 0 25px rgba(139, 92, 246, 0.2); }
+    .ai-border { border: 1px solid rgba(139, 92, 246, 0.4); }
+
     /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -77,22 +81,27 @@
     }
 
     /* KALENDER TAB GRID STYLE */
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-    .day-cell { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 6px; cursor: pointer; transition: all 0.3s ease; display: flex; flex-direction: column; min-height: 80px; }
-    .day-cell:hover { background: rgba(102, 126, 234, 0.2); border-color: #667eea; }
-    .day-cell.other-month { opacity: 0.3; cursor: default; }
-    .day-cell.today { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: transparent; }
-    .day-number { font-weight: 700; font-size: 1rem; margin-bottom: 4px; color: #fff; text-align: left; }
-    
-    .quest-dots { display: flex; gap: 3px; margin-bottom: 4px; flex-wrap: wrap; }
-    .quest-dot { width: 6px; height: 6px; border-radius: 50%; background-color: #10b981; box-shadow: 0 0 5px #10b981; }
-    
-    .event-badges { display: flex; flex-direction: column; gap: 3px; flex: 1; overflow-y: auto; }
-    .event-badge { padding: 3px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; text-align: left; }
-    .ev-custom { background: linear-gradient(135deg, #3b82f6, #fee140); color: #000; }
-    .ev-nasional { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #000; }
-    .ev-festival { background: linear-gradient(135deg, #f093fb, #f5576c); color: #fff; }
-    .ev-liburan { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #000; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+    .day-cell { 
+      background: rgba(255, 255, 255, 0.03); 
+      border: 1px solid rgba(255, 255, 255, 0.05); 
+      border-radius: 12px; 
+      padding: 8px 4px; 
+      cursor: pointer; 
+      transition: all 0.3s ease; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center;
+      min-height: 85px; 
+    }
+    .day-cell:hover:not(.other-month) { background: rgba(102, 126, 234, 0.15); border-color: rgba(102, 126, 234, 0.5); }
+    .day-cell.other-month { opacity: 0.15; cursor: default; }
+    .day-cell.today { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-color: transparent; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4); }
+    .day-cell.has-event { border: 1.5px solid #3b82f6; background: rgba(59, 130, 246, 0.08); }
+    .day-number { font-weight: 800; font-size: 0.95rem; color: #fff; text-align: center; margin-bottom: auto;}
+    .quest-dots { display: flex; gap: 3px; flex-wrap: wrap; justify-content: center; width: 100%;}
+    .quest-dot { width: 5px; height: 5px; border-radius: 50%; background-color: #10b981; box-shadow: 0 0 5px #10b981; }
+    .tiny-badge { background-color: #ef4444; color: white; font-size: 0.55rem; font-weight: 900; padding: 2px 4px; border-radius: 4px; line-height: 1;}
 
     /* Custom File Input */
     .file-input-wrapper input[type="file"] { position: absolute; left: -9999px; }
@@ -124,14 +133,28 @@
       </div>
     </div>
 
-    <!-- Header Logo -->
-    <div class="mb-8 flex items-center gap-4">
-      <div class="p-3 bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transform -rotate-3 hover:rotate-0 transition-transform">
-        <i data-lucide="zap" class="w-7 h-7 text-white fill-white/20"></i>
+    <!-- Header Logo & TAMBAHAN AI: Vibe Sync -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class="p-3 bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transform -rotate-3 hover:rotate-0 transition-transform">
+          <i data-lucide="zap" class="w-7 h-7 text-white fill-white/20"></i>
+        </div>
+        <div>
+          <h1 class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 tracking-tight">VibeCheck.</h1>
+          <p class="text-gray-400 text-xs md:text-sm font-medium mt-0.5">Conquer your day, completely offline 🚀</p>
+        </div>
       </div>
-      <div>
-        <h1 class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 tracking-tight">VibeCheck.</h1>
-        <p class="text-gray-400 text-xs md:text-sm font-medium mt-0.5">Conquer your day, completely offline 🚀</p>
+      
+      <!-- PENGEMBANGAN AI: Indikator Vibe Terinkronisasi dengan Jurnal Pagi -->
+      <div class="glass-card px-5 py-3 rounded-2xl flex items-center justify-between md:justify-end gap-6 border border-white/10 hidden" id="header-vibe-card">
+        <div>
+          <p class="text-[10px] font-black text-gray-400 tracking-widest uppercase mb-1">Morning Vibe</p>
+          <div class="flex items-center gap-3">
+            <span id="header-energy" class="text-blue-400 font-bold text-sm flex items-center gap-1.5"><i data-lucide="battery-charging" class="w-4 h-4"></i> --/10</span>
+            <span class="text-gray-700">|</span>
+            <span id="header-mood" class="text-violet-400 font-bold text-sm flex items-center gap-1.5"><i data-lucide="smile" class="w-4 h-4"></i> --</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -148,8 +171,63 @@
 
     <!-- ========== TAB 1: JADWAL / QUESTS ========== -->
     <div id="content-jadwal" class="tab-content">
-      <!-- Quick Stats dengan Glowing Top Border -->
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      
+      <!-- PENGEMBANGAN AI: EXECUTIVE DASHBOARD (Sesuai Fase 1 & 2) -->
+      <div id="ai-dashboard-panel" class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- 🎯 Main Focus Card -->
+        <div class="md:col-span-2 bg-gradient-to-br from-[#1a1f2e] to-[#151923] rounded-[32px] p-6 border-2 border-blue-500/30 relative overflow-hidden shadow-lg">
+          <div class="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+          <p class="text-[10px] text-blue-400 font-black tracking-widest uppercase mb-3 flex items-center gap-2 relative z-10">
+            <i data-lucide="target" class="w-4 h-4"></i> Main Focus (Execution Mode)
+          </p>
+          <h2 id="ai-main-focus-title" class="text-2xl font-black text-white mb-4 relative z-10">Sedang Memuat...</h2>
+          
+          <div class="space-y-2 relative z-10">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-gray-400">Est. Time: <span id="ai-main-focus-time" class="text-white">--</span></span>
+              <span class="text-blue-400">Progress: 0%</span>
+            </div>
+            <div class="w-full bg-black/50 rounded-full h-2.5 overflow-hidden border border-white/5">
+              <div class="bg-blue-500 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="mt-4 flex gap-2">
+              <button class="bg-white/10 hover:bg-blue-500/20 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all border border-white/10 flex items-center gap-2"><i data-lucide="play" class="w-3.5 h-3.5"></i> Start Focus</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 💡 AI Insight Card -->
+        <div class="bg-gradient-to-br from-violet-900/40 to-[#151923] border border-violet-500/30 rounded-[32px] p-6 ai-glow relative overflow-hidden flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-3 relative z-10">
+              <i data-lucide="sparkles" class="w-5 h-5 text-violet-400"></i>
+              <h3 class="font-black text-violet-300 tracking-wide text-sm uppercase">AI Insight</h3>
+            </div>
+            <p id="ai-insight-text" class="text-sm text-gray-200 leading-relaxed font-medium relative z-10">
+              Menganalisis jadwal dan energimu hari ini...
+            </p>
+          </div>
+          <button class="mt-4 text-[11px] font-bold text-violet-400 hover:text-white transition-colors underline decoration-violet-500/50 underline-offset-4 text-left w-max" onclick="toggleAIChat()">Tanya AI Assistant</button>
+        </div>
+      </div>
+
+      <!-- PENGEMBANGAN AI: Midday Adaptive Banner (Hidden default) -->
+      <div id="ai-midday-banner" class="hidden mb-6 bg-orange-500/10 border border-orange-500/40 rounded-[24px] p-5 flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-orange-500/20 rounded-xl text-orange-400"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+          <div>
+            <h4 class="font-black text-white text-sm">Adaptive Planning (Midday)</h4>
+            <p class="text-xs text-gray-400 mt-1">Satu prioritas belum dimulai. Jadwalkan ulang ke sore hari?</p>
+          </div>
+        </div>
+        <div class="flex gap-2 w-full md:w-auto">
+          <button class="flex-1 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all">Nanti Saja</button>
+          <button class="flex-1 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all">Reschedule</button>
+        </div>
+      </div>
+
+      <!-- Quick Stats dengan Glowing Top Border (Dipertahankan dari UI Lama) -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 mt-2">
         <div class="bg-[#151923] rounded-2xl p-5 border border-white/5 border-t-4 border-t-blue-500 shadow-lg relative overflow-hidden transition-all">
           <p class="text-gray-400 text-[10px] font-black tracking-widest mb-1 uppercase">TOTAL TUGAS</p>
           <p id="stat-total" class="text-3xl font-black text-white">0</p>
@@ -200,10 +278,16 @@
         <!-- Blok Pagi -->
         <div class="glass-card rounded-[28px] p-6 md:p-8 border border-white/5 relative overflow-hidden">
           <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px]"></div>
-          <div class="flex items-center gap-3 mb-6 relative z-10">
-            <div class="p-3 bg-blue-500/20 rounded-2xl"><i data-lucide="sunrise" class="w-6 h-6 text-blue-400"></i></div>
-            <h3 class="text-lg font-black text-white tracking-tight">Morning Vibes</h3>
+          
+          <div class="flex justify-between items-start mb-6 relative z-10">
+            <div class="flex items-center gap-3">
+              <div class="p-3 bg-blue-500/20 rounded-2xl"><i data-lucide="sunrise" class="w-6 h-6 text-blue-400"></i></div>
+              <h3 class="text-lg font-black text-white tracking-tight">Morning Vibes</h3>
+            </div>
+            <!-- AI Tag -->
+            <span class="text-[10px] font-bold text-gray-400 bg-white/5 border border-white/10 px-3 py-1 rounded-full uppercase tracking-widest">Fase 1: Check-in</span>
           </div>
+
           <div class="space-y-5 relative z-10">
             <div>
               <label class="block text-xs font-extrabold text-gray-400 mb-2 tracking-widest">SATU HAL UTAMA 🎯</label>
@@ -213,12 +297,26 @@
               <label class="block text-xs font-extrabold text-gray-400 mb-2 tracking-widest">PERSIAPAN HAMBATAN 🚧</label>
               <textarea id="j-prioritas" class="j-input w-full bg-black/40 border border-gray-700 rounded-2xl p-4 text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm resize-none" rows="2" placeholder="Hambatan & cara menghindarinya..."></textarea>
             </div>
+            
             <div class="bg-black/30 p-4 rounded-2xl border border-white/5">
               <div class="flex justify-between items-center mb-3">
-                <label class="block text-xs font-extrabold text-gray-400 tracking-widest">BATERAI PAGI 🔋</label>
+                <label class="block text-xs font-extrabold text-gray-400 tracking-widest">BATERAI PAGI (Energy) 🔋</label>
                 <span id="val-energi-pagi" class="text-sm font-black text-blue-400 bg-blue-500/10 px-2 py-1 rounded-lg">5/10</span>
               </div>
-              <input type="range" id="j-energi-pagi" min="1" max="10" value="5" class="j-input w-full accent-blue-500" oninput="document.getElementById('val-energi-pagi').innerText = this.value + '/10'">
+              <input type="range" id="j-energi-pagi" min="1" max="10" value="5" class="j-input w-full accent-blue-500" oninput="document.getElementById('val-energi-pagi').innerText = this.value + '/10'; syncVibeDataToHeader();">
+            </div>
+
+            <div>
+              <label class="block text-xs font-extrabold text-gray-400 mb-3 tracking-widest">VIBE CHECK PAGI INI ✨</label>
+              <div class="flex flex-wrap gap-2" id="mood-container">
+                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Santai 😌">😌 Santai</button>
+                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Bersyukur 💖">💖 Bersyukur</button>
+                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Fokus 🎯">🎯 Fokus</button>
+                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Kelelahan 😵">😵 Kelelahan</button>
+                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Semangat 🔥">🔥 Semangat</button>
+                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Cemas 🌪️">🌪️ Cemas</button>
+              </div>
+              <input type="hidden" id="j-mood" value="">
             </div>
           </div>
         </div>
@@ -226,10 +324,16 @@
         <!-- Blok Malam -->
         <div class="glass-card rounded-[28px] p-6 md:p-8 border border-white/5 relative overflow-hidden">
           <div class="absolute bottom-0 left-0 w-64 h-64 bg-violet-600/10 rounded-full blur-[80px]"></div>
-          <div class="flex items-center gap-3 mb-6 relative z-10">
-            <div class="p-3 bg-violet-500/20 rounded-2xl"><i data-lucide="moon-star" class="w-6 h-6 text-violet-400"></i></div>
-            <h3 class="text-lg font-black text-white tracking-tight">Night Reflections</h3>
+          
+          <div class="flex justify-between items-start mb-6 relative z-10">
+            <div class="flex items-center gap-3">
+              <div class="p-3 bg-violet-500/20 rounded-2xl"><i data-lucide="moon-star" class="w-6 h-6 text-violet-400"></i></div>
+              <h3 class="text-lg font-black text-white tracking-tight">Night Reflections</h3>
+            </div>
+            <!-- AI Tag -->
+            <span class="text-[10px] font-bold text-gray-400 bg-white/5 border border-white/10 px-3 py-1 rounded-full uppercase tracking-widest">Fase 4: Reflect & Learn</span>
           </div>
+
           <div class="space-y-5 relative z-10">
             <div>
               <label class="block text-xs font-extrabold text-gray-400 mb-2 tracking-widest">PENCAPAIAN HARI INI 🏆</label>
@@ -245,18 +349,6 @@
                 <span id="val-energi-malam" class="text-sm font-black text-violet-400 bg-violet-500/10 px-2 py-1 rounded-lg">5/10</span>
               </div>
               <input type="range" id="j-energi-malam" min="1" max="10" value="5" class="j-input w-full accent-violet-500" oninput="document.getElementById('val-energi-malam').innerText = this.value + '/10'">
-            </div>
-            <div>
-              <label class="block text-xs font-extrabold text-gray-400 mb-3 tracking-widest">VIBE CHECK HARI INI ✨</label>
-              <div class="flex flex-wrap gap-2" id="mood-container">
-                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Santai 😌">😌 Santai</button>
-                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Bersyukur 💖">💖 Bersyukur</button>
-                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Fokus 🎯">🎯 Fokus</button>
-                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Kelelahan 😵">😵 Kelelahan</button>
-                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Semangat 🔥">🔥 Semangat</button>
-                <button class="mood-btn j-input px-4 py-2 rounded-full border border-gray-700 text-xs font-bold text-gray-400 hover:border-violet-500 hover:text-white transition-all active:scale-95" data-mood="Cemas 🌪️">🌪️ Cemas</button>
-              </div>
-              <input type="hidden" id="j-mood" value="">
             </div>
           </div>
         </div>
@@ -289,27 +381,27 @@
 
     <!-- ========== TAB 3: KALENDER EVENT ========== -->
     <div id="content-calendar" class="tab-content hidden">
-      <div class="bg-[#151923] rounded-[32px] p-6 border border-white/5 shadow-2xl">
+      <div class="bg-[#111620] rounded-[32px] p-5 border border-white/5 shadow-2xl max-w-md mx-auto">
         <!-- Controls Navigasi Kalender -->
-        <div class="flex justify-between items-center mb-6">
-          <button onclick="calPrevMonth()" class="bg-white/5 hover:bg-white/10 text-white p-2.5 rounded-xl transition border border-white/10">
+        <div class="flex justify-between items-center mb-6 bg-white/5 p-2 rounded-2xl border border-white/10">
+          <button onclick="calPrevMonth()" class="hover:bg-white/10 text-white p-2.5 rounded-xl transition border border-white/10">
             <i data-lucide="chevron-left" class="w-5 h-5"></i>
           </button>
-          <div class="font-black text-lg md:text-xl text-white tracking-widest uppercase text-center" id="cal-month-year">Bulan Tahun</div>
-          <button onclick="calNextMonth()" class="bg-white/5 hover:bg-white/10 text-white p-2.5 rounded-xl transition border border-white/10">
+          <div class="font-black text-lg md:text-xl text-white tracking-widest uppercase text-center flex-1" id="cal-month-year">Bulan Tahun</div>
+          <button onclick="calNextMonth()" class="hover:bg-white/10 text-white p-2.5 rounded-xl transition border border-white/10">
             <i data-lucide="chevron-right" class="w-5 h-5"></i>
           </button>
         </div>
 
         <!-- Calendar Grid Area -->
         <div class="grid grid-cols-7 gap-1 md:gap-2 mb-4 text-center">
-          <div class="text-blue-400 font-black text-xs uppercase">Min</div>
-          <div class="text-gray-400 font-bold text-xs uppercase">Sen</div>
-          <div class="text-gray-400 font-bold text-xs uppercase">Sel</div>
-          <div class="text-gray-400 font-bold text-xs uppercase">Rab</div>
-          <div class="text-gray-400 font-bold text-xs uppercase">Kam</div>
-          <div class="text-gray-400 font-bold text-xs uppercase">Jum</div>
-          <div class="text-cyan-400 font-black text-xs uppercase">Sab</div>
+          <div class="text-blue-500 font-black text-[10px] uppercase">Min</div>
+          <div class="text-gray-400 font-bold text-[10px] uppercase">Sen</div>
+          <div class="text-gray-400 font-bold text-[10px] uppercase">Sel</div>
+          <div class="text-gray-400 font-bold text-[10px] uppercase">Rab</div>
+          <div class="text-gray-400 font-bold text-[10px] uppercase">Kam</div>
+          <div class="text-gray-400 font-bold text-[10px] uppercase">Jum</div>
+          <div class="text-cyan-400 font-black text-[10px] uppercase">Sab</div>
         </div>
         <div class="cal-grid" id="calendar-grid"></div>
       </div>
@@ -376,11 +468,11 @@
           <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="w-5 h-5">
           </div>
-          <input type="text" placeholder="Masukkan Kode API key" class="w-full bg-[#151923] border border-white/10 text-white p-4 pl-12 rounded-2xl focus:outline-none focus:border-blue-500 text-sm font-medium">
+          <input type="text" placeholder="Masukkan Kode API key AI" class="w-full bg-[#151923] border border-white/10 text-white p-4 pl-12 rounded-2xl focus:outline-none focus:border-violet-500 text-sm font-medium">
         </div>
 
         <div class="pt-2">
-          <p class="text-xs text-gray-400 mb-3 font-semibold">Tekan ini untuk mendapatkan API key</p>
+          <p class="text-xs text-gray-400 mb-3 font-semibold">Tekan ini untuk mendapatkan API key Google</p>
           <button class="bg-white hover:bg-gray-200 text-black px-6 py-3 rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-95 w-max">
             <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="w-4 h-4"> API Key
           </button>
@@ -395,6 +487,16 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- FLOATING AI ASSISTANT BUTTON (PENGEMBANGAN BARU)          -->
+  <!-- ========================================================= -->
+  <div class="fixed bottom-24 right-4 md:right-8 z-40">
+    <button onclick="toggleAIChat()" class="w-14 h-14 bg-gradient-to-r from-violet-600 to-blue-600 text-white rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(139,92,246,0.6)] hover:scale-110 active:scale-95 transition-all border-2 border-white/20 ai-glow relative group">
+      <i data-lucide="sparkles" class="w-6 h-6 group-hover:rotate-12 transition-transform"></i>
+      <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border border-[#09090b]">1</span>
+    </button>
   </div>
 
   <!-- ========================================================= -->
@@ -444,8 +546,33 @@
     </div>
   </div>
 
+  <!-- MODAL: AI CHAT ASSISTANT (PENGEMBANGAN BARU) -->
+  <div id="modal-ai-chat" class="overlay-window hidden" style="display: none; align-items: flex-end; padding-bottom: 90px;">
+    <div class="overlay-backdrop" onclick="toggleAIChat()"></div>
+    <div class="bg-[#0f1117] border border-violet-500/30 rounded-3xl w-[95%] max-w-md shadow-[0_0_50px_rgba(139,92,246,0.3)] relative z-[999999] h-[60vh] flex flex-col overflow-hidden ai-border">
+      <div class="bg-gradient-to-r from-violet-600/20 to-blue-600/20 p-4 border-b border-white/5 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center"><i data-lucide="bot" class="w-5 h-5 text-violet-400"></i></div>
+          <div><h3 class="font-black text-white text-sm">VibeCheck AI</h3><p class="text-[10px] text-gray-400">Autonomous Planner Mode</p></div>
+        </div>
+        <button onclick="toggleAIChat()" class="text-gray-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div class="flex-1 p-4 overflow-y-auto space-y-4">
+        <!-- Chat bubbles (Contoh awal) -->
+        <div class="bg-[#1a1f2e] text-white p-3 rounded-2xl rounded-tl-sm text-sm border border-white/5 w-10/12">
+          Pagi! Hari ini energimu lumayan tinggi. Ada beberapa tugas prioritas. Apa ada yang ingin diubah dari jadwal Home?
+        </div>
+      </div>
+      <div class="p-3 border-t border-white/5 bg-black/20">
+        <div class="relative">
+          <input type="text" placeholder="Ketik 'Reschedule tugasku'..." class="w-full bg-[#151923] border border-white/10 text-white p-3 pr-12 rounded-xl focus:outline-none focus:border-violet-500 text-sm">
+          <button class="absolute right-2 top-2 p-1.5 bg-violet-600 hover:bg-violet-500 transition-colors text-white rounded-lg"><i data-lucide="send" class="w-4 h-4"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- MODAL: ADD NEW QUEST (Dipertahankan dari Engine Lama) -->
+  <!-- MODAL: ADD NEW QUEST (Struktur Data Diperbarui Untuk AI) -->
   <div id="modal-task-form" class="overlay-window hidden" style="display: none;">
     <div class="overlay-backdrop" onclick="closeTaskModal()"></div>
     <div class="bg-[#0f1117] border border-white/5 rounded-3xl p-6 md:p-8 w-[95%] max-w-sm shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-[999999]">
@@ -602,7 +729,7 @@
   <!-- Pendaftaran Service Worker Paksa (Satu Paket Offline) -->
   <script>
 // ==========================================
-// VIBECHECK - FULL ENGINE LOGIC
+// VIBECHECK - FULL ENGINE LOGIC + AI EXTENSIONS
 // ==========================================
 
 if ('serviceWorker' in navigator) {
@@ -670,7 +797,8 @@ function getLocalISODate(dateObj) {
 
 async function initDB() {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open('ProductivityEngineDB', 10);
+    // PENGEMBANGAN AI: Naikkan versi DB ke 11 untuk menerima field struktur data baru
+    const req = indexedDB.open('ProductivityEngineDB', 11);
     req.onupgradeneeded = (e) => {
       const database = e.target.result;
       if(!database.objectStoreNames.contains('tasks')) database.createObjectStore('tasks', { keyPath: 'id' });
@@ -691,20 +819,17 @@ const dbAct = {
 
 // --- LOGIKA TAB BOTTOM NAVIGATION ---
 function switchTab(tabId) {
-  // Sembunyikan semua tab konten
   document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
   const target = document.getElementById(`content-${tabId}`);
   if(target) target.classList.remove('hidden');
   
-  // Bersihkan highlight icon dari semua navbar item
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.className = "nav-btn flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 transition-all p-2 w-16";
     const icon = btn.querySelector('i');
     const wrapper = btn.querySelector('.icon-wrapper');
-    if(wrapper && icon) { wrapper.replaceWith(icon); } // Unwrap div jika ada
+    if(wrapper && icon) { wrapper.replaceWith(icon); } 
   });
 
-  // Highlight tab yang aktif (hanya berlaku jika yang dipencet bukan tombol setting gear)
   const activeBtn = document.getElementById(`nav-${tabId}`);
   if(activeBtn) {
     activeBtn.className = "nav-btn flex flex-col items-center gap-1 text-blue-400 transition-all p-2 w-16";
@@ -717,7 +842,6 @@ function switchTab(tabId) {
     }
   }
   
-  // Trigger update data sesuai tab
   if (tabId === 'jadwal') renderTasks();
   if (tabId === 'jurnal') loadJournal();
   if (tabId === 'statistik') renderStatsTab();
@@ -729,17 +853,21 @@ function switchTab(tabId) {
   window.scrollTo(0, 0);
 }
 
+// PENGEMBANGAN AI: Fungsi Modal Chat Assistant
+function toggleAIChat() { 
+  const modal = document.getElementById('modal-ai-chat');
+  if(modal.style.display === 'none') { modal.style.display = 'flex'; modal.classList.remove('hidden'); } 
+  else { modal.style.display = 'none'; modal.classList.add('hidden'); }
+}
+
 function openAddMenu() {
   const m = document.getElementById('modal-add-menu');
-  m.classList.remove('hidden');
-  m.style.display = 'flex';
+  m.classList.remove('hidden'); m.style.display = 'flex';
 }
 function closeAddMenu() {
   const m = document.getElementById('modal-add-menu');
-  m.classList.add('hidden');
-  m.style.display = 'none';
+  m.classList.add('hidden'); m.style.display = 'none';
 }
-
 
 // --- GLOBAL DATE LOGIC ---
 document.getElementById('input-global-date').addEventListener('change', e => { 
@@ -765,6 +893,16 @@ function updateDateUI() {
   document.getElementById('display-full-date').innerText = fullDate.toUpperCase();
 }
 
+// PENGEMBANGAN AI: Sync Vibe dari Jurnal ke Header
+async function syncVibeDataToHeader() {
+  const currentEnergy = document.getElementById('j-energi-pagi').value || 5;
+  const currentMood = document.getElementById('j-mood').value || 'Belum diisi';
+  
+  document.getElementById('header-vibe-card').classList.remove('hidden');
+  document.getElementById('header-energy').innerHTML = `<i data-lucide="battery-charging" class="w-4 h-4"></i> ${currentEnergy}/10`;
+  document.getElementById('header-mood').innerHTML = `<i data-lucide="smile" class="w-4 h-4"></i> ${currentMood.split(' ')[1] || currentMood}`;
+  if (window.lucide) lucide.createIcons();
+}
 
 // --- ENGINE: TUGAS & TAMPILAN DOM ---
 async function renderTasks() {
@@ -775,6 +913,26 @@ async function renderTasks() {
   const container = document.getElementById('task-list-container');
   let htmlString = '';
   let comp = 0;
+
+  // PENGEMBANGAN AI: Set Main Focus di Dashboard
+  const uncompletedTasks = dayTasks.filter(t => !t.completed);
+  if(uncompletedTasks.length > 0) {
+    document.getElementById('ai-main-focus-title').innerText = uncompletedTasks[0].title;
+    document.getElementById('ai-main-focus-time').innerText = (uncompletedTasks[0].estimated_duration || 60) + " mins";
+  } else if (dayTasks.length > 0) {
+    document.getElementById('ai-main-focus-title').innerText = "All Quests Cleared! 🎉";
+    document.getElementById('ai-main-focus-time').innerText = "--";
+  } else {
+    document.getElementById('ai-main-focus-title').innerText = "Belum Ada Jadwal";
+    document.getElementById('ai-main-focus-time').innerText = "--";
+  }
+
+  // PENGEMBANGAN AI: Set AI Insight Text logic
+  if(dayTasks.length > 5 && uncompletedTasks.length > 3) {
+    document.getElementById('ai-insight-text').innerText = "Jadwalmu cukup padat hari ini. Kerjakan satu per satu, jangan lupa ambil nafas. Gunakan fitur 'Start Focus'.";
+  } else {
+    document.getElementById('ai-insight-text').innerText = "Energi dan jadwalmu seimbang hari ini. Lanjutkan momentummu!";
+  }
   
   if(dayTasks.length === 0) {
     htmlString = '<div class="glass-card rounded-3xl p-8 text-center text-gray-500 font-bold border-dashed border-2 border-gray-700">Tidak ada jadwal hari ini. Ambil nafas sejenak! 🛌</div>';
@@ -794,6 +952,7 @@ async function renderTasks() {
             <div class="flex items-center gap-3 mt-1.5">
               <span class="text-xs font-semibold text-gray-400">${t.time}</span>
               <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${colorCls}">${t.category}</span>
+              ${t.priority === 'HIGH' ? '<span class="text-[10px] text-red-400 font-bold">🔴 High Priority</span>' : ''}
             </div>
           </div>
           <button onclick="deleteTask('${t.id}')" class="p-2 text-red-400 hover:text-red-300 opacity-70 hover:opacity-100 transition-opacity">
@@ -855,7 +1014,15 @@ async function renderDailyBanner(dateStr) {
   if (window.lucide) lucide.createIcons({ root: bannerContainer });
 }
 
-async function toggleTask(id, isC) { const t = await dbAct.get('tasks', id); t.completed = isC; await dbAct.add('tasks', t); renderTasks(); }
+async function toggleTask(id, isC) { 
+  const t = await dbAct.get('tasks', id); 
+  t.completed = isC; 
+  // PENGEMBANGAN AI: Update status DB saat task ditoggle
+  t.status = isC ? "COMPLETED" : "IN_PROGRESS";
+  t.completed_at = isC ? new Date().toISOString() : null;
+  await dbAct.add('tasks', t); 
+  renderTasks(); 
+}
 async function deleteTask(id) { if(confirm('Hapus tugas ini?')) { await dbAct.del('tasks', id); renderTasks(); } }
 
 function openTaskModal() {
@@ -901,15 +1068,32 @@ async function saveNewTask() {
   
   const selectedDays = Array.from(document.querySelectorAll('.day-btn.active')).map(b => parseInt(b.dataset.day));
   
+  // PENGEMBANGAN AI: Menambahkan field struktur data baru untuk AI Engine nanti
+  const baseTaskData = {
+    title: title, 
+    description: "",
+    category: category, 
+    time: time,
+    completed: false, 
+    notif: useNotif, 
+    notified: false,
+    priority: "MEDIUM", 
+    status: "PENDING", 
+    estimated_duration: 60, 
+    progress: 0, 
+    created_at: new Date().toISOString(),
+    completed_at: null
+  };
+
   if (selectedDays.length === 0) {
-    await dbAct.add('tasks', { id: `t_${Date.now()}`, title: title, time: time, category: category, date: getLocalISODate(currentDate), completed: false, notif: useNotif, notified: false });
+    await dbAct.add('tasks', { id: `t_${Date.now()}`, date: getLocalISODate(currentDate), ...baseTaskData });
   } else {
     const baseDate = new Date(currentDate); 
     for (let i = 0; i < 7; i++) {
       const checkDate = new Date(baseDate);
       checkDate.setDate(baseDate.getDate() + i);
       if (selectedDays.includes(checkDate.getDay())) {
-        await dbAct.add('tasks', { id: `t_${Date.now()}_${i}`, title: title, time: time, category: category, date: getLocalISODate(checkDate), completed: false, notif: useNotif, notified: false });
+        await dbAct.add('tasks', { id: `t_${Date.now()}_${i}`, date: getLocalISODate(checkDate), ...baseTaskData });
       }
     }
   }
@@ -1079,18 +1263,18 @@ async function renderCalendar() {
     let badgesHTML = '';
     const holiday = liburNasional[dateStr];
     if (holiday) {
-      badgesHTML += `<div class="event-badge bg-red-600 text-white truncate border border-red-400" title="${holiday}">${holiday}</div>`;
+      badgesHTML += `<div class="tiny-badge" title="${holiday}">H..</div>`;
     }
 
-    dayEvents.forEach(e => {
-      badgesHTML += `<div class="event-badge ev-${e.category || 'custom'}" onclick="editEventObj('${e.id}'); event.stopPropagation();">${e.title}</div>`;
-    });
+    const hasEvent = dayEvents.length > 0;
 
     calHTML += `
-      <div class="day-cell ${isToday ? 'today' : ''}" onclick="selectDateFromCalendar('${dateStr}')">
+      <div class="day-cell ${isToday ? 'today' : ''} ${hasEvent && !isToday ? 'has-event' : ''}" onclick="selectDateFromCalendar('${dateStr}')">
         <div class="day-number">${i}</div>
-        <div class="quest-dots">${dotsHTML}</div>
-        <div class="event-badges">${badgesHTML}</div>
+        <div class="flex flex-col items-center gap-1.5 w-full mt-1">
+          ${dotsHTML ? `<div class="quest-dots">${dotsHTML}</div>` : ''}
+          ${badgesHTML}
+        </div>
       </div>`;
   }
   gridEl.innerHTML = calHTML;
@@ -1301,6 +1485,7 @@ document.querySelectorAll('.mood-btn').forEach(btn => {
     document.querySelectorAll('.mood-btn').forEach(b => { b.classList.remove('bg-violet-500/20', 'border-violet-500', 'text-white'); b.classList.add('border-gray-700', 'text-gray-400'); });
     btn.classList.add('bg-violet-500/20', 'border-violet-500', 'text-white'); btn.classList.remove('border-gray-700', 'text-gray-400');
     document.getElementById('j-mood').value = btn.dataset.mood;
+    syncVibeDataToHeader(); // PENGEMBANGAN AI: Sync ke atas
   });
 });
 
@@ -1377,6 +1562,8 @@ async function loadJournal() {
     else if(cStr === today) { cd.setDate(cd.getDate()-1); } else break;
   }
   document.getElementById('j-stat-streak').innerText = streak;
+
+  syncVibeDataToHeader(); // PENGEMBANGAN AI: Sync pas pertama di load
 }
 
 async function saveJournalLogic() {
